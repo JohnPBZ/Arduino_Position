@@ -1,6 +1,6 @@
-a = arduino('COM3', 'Uno', 'Libraries', 'I2C');
-fs = 100; % Sample Rate in Hz
-imu = mpu9250(a,'SampleRate',fs,'OutputFormat','matrix'); 
+% a = arduino('COM3', 'Uno', 'Libraries', 'I2C');
+% fs = 100; % Sample Rate in Hz
+% imu = mpu9250(a,'SampleRate',fs,'OutputFormat','matrix'); 
 %===========================================================================
 
 samplePeriod = 1/fs;
@@ -16,8 +16,7 @@ linVel=[0 0 0];
 linAcc=[0 0 0];
 linVelHP=[0 0 0];
 linPos=[0 0 0];
-imuGyro=[0 0 0];
-imuAcc=[0 0 0];
+gyro=[0 0 0];
 i=2;
 % order = 1;
 % filtCutOff = 0.1;
@@ -56,8 +55,7 @@ while(toc < stopTimer)
 %         viewer(rotators(j));
         R = quat2rotm(rotators(j));
         tcAcc = R * accel(j,:)';
-        imuAcc(i,:)=accel(j,:);
-        imuGyro(i,:)=gyro(j,:);
+        g
         linAcc(i,:) = tcAcc' - [0 0 9.8];
         linVel(i,:) = linVel(i-1,:) + linAcc(i,:) * samplePeriod;
 
