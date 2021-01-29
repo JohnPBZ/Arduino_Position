@@ -56,41 +56,37 @@ while(toc < stopTimer)
         tcAcc = R * accel(j,:)';
         linAcc(i,:) = tcAcc' - [0 0 9.8];
         linVel(i,:) = linVel(i-1,:) + linAcc(i,:) * samplePeriod;
-        if (length(linVel)>3)
-            linVelHP = filtfilt(b, a, linVel);
-            linPos(i,:) = linPos(i-1,:) + linVelHP(i,:) * samplePeriod;
-            if (length(linPos)>3)
-                linPosHP = filtfilt(b, a, linPos);
-                ox = linPosHP(i,1);
-                oy = linPosHP(i,2);
-                oz = linPosHP(i,3);     
-                ux = R(1,1);
-                vx = R(2,1);
-                wx = R(3,1);
-                uy = R(1,2);
-                vy = R(2,2);
-                wy = R(3,2);
-                uz = R(1,3);
-                vz = R(2,3);
-                wz = R(3,3);
-                set(orgHandle, 'xdata', ox, 'ydata', oy, 'zdata', oz);
-                set(quivXhandle, 'xdata', ox, 'ydata', oy, 'zdata', oz,'udata', ux, 'vdata', vx, 'wdata', wx);
-                set(quivYhandle, 'xdata', ox, 'ydata', oy, 'zdata', oz,'udata', uy, 'vdata', vy, 'wdata', wy);
-                set(quivZhandle, 'xdata', ox, 'ydata', oy, 'zdata', oz,'udata', uz, 'vdata', vz, 'wdata', wz);
 
-                axisLimChanged = false;
-                if((linPosHP(i,1) - AxisLength) < Xlim(1)), Xlim(1) = linPosHP(i,1) - LimitRatio*AxisLength; axisLimChanged = true; end
-                if((linPosHP(i,2) - AxisLength) < Ylim(1)), Ylim(1) = linPosHP(i,2) - LimitRatio*AxisLength; axisLimChanged = true; end
-                if((linPosHP(i,3) - AxisLength) < Zlim(1)), Zlim(1) = linPosHP(i,3) - LimitRatio*AxisLength; axisLimChanged = true; end
-                if((linPosHP(i,1) + AxisLength) > Xlim(2)), Xlim(2) = linPosHP(i,1) + LimitRatio*AxisLength; axisLimChanged = true; end
-                if((linPosHP(i,2) + AxisLength) > Ylim(2)), Ylim(2) = linPosHP(i,2) + LimitRatio*AxisLength; axisLimChanged = true; end
-                if((linPosHP(i,3) + AxisLength) > Zlim(2)), Zlim(2) = linPosHP(i,3) + LimitRatio*AxisLength; axisLimChanged = true; end
-                if(axisLimChanged), set(gca, 'Xlim', Xlim, 'Ylim', Ylim, 'Zlim', Zlim); end
-                drawnow;
-            end   
-        else
-            linPos(i,:) = [0 0 0];
-        end
+        linPos(i,:) = linPos(i-1,:) + linVel(i,:) * samplePeriod;
+
+        ox = linPos(i,1);
+        oy = linPos(i,2);
+        oz = linPos(i,3);     
+        ux = R(1,1);
+        vx = R(2,1);
+        wx = R(3,1);
+        uy = R(1,2);
+        vy = R(2,2);
+        wy = R(3,2);
+        uz = R(1,3);
+        vz = R(2,3);
+        wz = R(3,3);
+        set(orgHandle, 'xdata', ox, 'ydata', oy, 'zdata', oz);
+        set(quivXhandle, 'xdata', ox, 'ydata', oy, 'zdata', oz,'udata', ux, 'vdata', vx, 'wdata', wx);
+        set(quivYhandle, 'xdata', ox, 'ydata', oy, 'zdata', oz,'udata', uy, 'vdata', vy, 'wdata', wy);
+        set(quivZhandle, 'xdata', ox, 'ydata', oy, 'zdata', oz,'udata', uz, 'vdata', vz, 'wdata', wz);
+
+        axisLimChanged = false;
+        if((linPos(i,1) - AxisLength) < Xlim(1)), Xlim(1) = linPos(i,1) - LimitRatio*AxisLength; axisLimChanged = true; end
+        if((linPos(i,2) - AxisLength) < Ylim(1)), Ylim(1) = linPos(i,2) - LimitRatio*AxisLength; axisLimChanged = true; end
+        if((linPos(i,3) - AxisLength) < Zlim(1)), Zlim(1) = linPos(i,3) - LimitRatio*AxisLength; axisLimChanged = true; end
+        if((linPos(i,1) + AxisLength) > Xlim(2)), Xlim(2) = linPos(i,1) + LimitRatio*AxisLength; axisLimChanged = true; end
+        if((linPos(i,2) + AxisLength) > Ylim(2)), Ylim(2) = linPos(i,2) + LimitRatio*AxisLength; axisLimChanged = true; end
+        if((linPos(i,3) + AxisLength) > Zlim(2)), Zlim(2) = linPos(i,3) + LimitRatio*AxisLength; axisLimChanged = true; end
+        if(axisLimChanged), set(gca, 'Xlim', Xlim, 'Ylim', Ylim, 'Zlim', Zlim); end
+        drawnow;
+
+
         i=i+1;
     end
 end
