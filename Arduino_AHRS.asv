@@ -1,5 +1,5 @@
 % a = arduino('COM3', 'Uno', 'Libraries', 'I2C');
-% fs = 100; % Sample Rate in Hz
+% fs = 200; % Sample Rate in Hz
 % imu = mpu9250(a,'SampleRate',fs,'OutputFormat','matrix'); 
 %===========================================================================
 
@@ -16,7 +16,8 @@ linVel=[0 0 0];
 linAcc=[0 0 0];
 linVelHP=[0 0 0];
 linPos=[0 0 0];
-gyro=[0 0 0];
+imuGyro=[0 0 0];
+imuAcc=[0 0 0];
 i=2;
 % order = 1;
 % filtCutOff = 0.1;
@@ -49,21 +50,20 @@ view(View(1, :));
 
 tic;
 while(toc < stopTimer)
-    [accel,gyro] = readSensorDataMPU9250(imu);
+    [accel, angVel, magField, timeStamp] = readSensorDataMPU9250(imu);
     rotators = FUSE(accel,gyro);
     for j = numel(rotators)
 %         viewer(rotators(j));
         R = quat2rotm(rotators(j));
         tcAcc = R * accel(j,:)';
-        g
+        imuAcc(i,:)=accel(j,:);
+        imuGyro(i,:)=gyro(j,:);
         linAcc(i,:) = tcAcc' - [0 0 9.8];
         linVel(i,:) = linVel(i-1,:) + linAcc(i,:) * samplePeriod;
 
         linPos(i,:) = linPos(i-1,:) + linVel(i,:) * samplePeriod;
 
-        ox = linPos(i,1);
-        oy = linPos(i,2);
-        oz = linPos(i,3);     
+
         ux = R(1,1);
         vx = R(2,1);
         wx = R(3,1);
@@ -73,20 +73,10 @@ while(toc < stopTimer)
         uz = R(1,3);
         vz = R(2,3);
         wz = R(3,3);
-        set(orgHandle, 'xdata', ox, 'ydata', oy, 'zdata', oz);
         set(quivXhandle, 'xdata', ox, 'ydata', oy, 'zdata', oz,'udata', ux, 'vdata', vx, 'wdata', wx);
         set(quivYhandle, 'xdata', ox, 'ydata', oy, 'zdata', oz,'udata', uy, 'vdata', vy, 'wdata', wy);
         set(quivZhandle, 'xdata', ox, 'ydata', oy, 'zdata', oz,'udata', uz, 'vdata', vz, 'wdata', wz);
 
-        axisLimChanged = false;
-        if((linPos(i,1) - AxisLength) < Xlim(1)), Xlim(1) = linPos(i,1) - LimitRatio*AxisLength; axisLimChanged = true; end
-        if((linPos(i,2) - AxisLength) < Ylim(1)), Ylim(1) = linPos(i,2) - LimitRatio*AxisLength; axisLimChanged = true; end
-        if((linPos(i,3) - AxisLength) < Zlim(1)), Zlim(1) = linPos(i,3) - LimitRatio*AxisLength; axisLimChanged = true; end
-        if((linPos(i,1) + AxisLength) > Xlim(2)), Xlim(2) = linPos(i,1) + LimitRatio*AxisLength; axisLimChanged = true; end
-        if((linPos(i,2) + AxisLength) > Ylim(2)), Ylim(2) = linPos(i,2) + LimitRatio*AxisLength; axisLimChanged = true; end
-        if((linPos(i,3) + AxisLength) > Zlim(2)), Zlim(2) = linPos(i,3) + LimitRatio*AxisLength; axisLimChanged = true; end
-        if(axisLimChanged), set(gca, 'Xlim', Xlim, 'Ylim', Ylim, 'Zlim', Zlim); end
-        drawnow;
 
 
         i=i+1;
