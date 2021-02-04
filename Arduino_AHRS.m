@@ -4,15 +4,15 @@
 % imu = mpu9250(a,'SampleRate',fs,'OutputFormat','matrix'); 
 
 % 各參數初始化
-accRecord=[0 0 0];
-gyrRecord=[0 0 0];
 linAcc=[0 0 0];
 linVel=[0 0 0];
 linVelHP=[0 0 0];
 linPos=[0 0 0];
 eInt = [0 0 0];
 q = [1 0 0 0]; % [w x y z]
-timeRecord = 0;
+timeRecord = zeros(1,500);
+accRecord=zeros(500,3);
+gyrRecord=zeros(500,3);
 
 % 濾波器
 order = 1;
@@ -45,10 +45,8 @@ set(gca, 'Xlim', Xlim, 'Ylim', Ylim, 'Zlim', Zlim);
 view(View(1, :));
 
 lastTime = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss.SSS');
-stopTimer = 100;
 i=2;
-tic;
-while(toc < stopTimer)
+while(i <= 500)
     % 讀取感測器數值
     [acc,time] = imu.readAcceleration;
     gyr = imu.readAngularVelocity;
