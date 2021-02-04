@@ -45,39 +45,22 @@ set(gca, 'Xlim', Xlim, 'Ylim', Ylim, 'Zlim', Zlim);
 view(View(1, :));
 
 lastTime = datetime('now','TimeZone','local','Format','d-MMM-y HH:mm:ss.SSS');
-stopTimer = 100;
 i=2;
 tic;
 while(toc < stopTimer)
-    % 讀取感測器數值
     [acc,time] = imu.readAcceleration;
     gyr = imu.readAngularVelocity;
-    % 記錄數值
     accRecord(i,:) = acc;
     gyrRecord(i,:)=gyr;
-    % DeltaT
     SamplePeriod = seconds(time-lastTime);
     lastTime=time;
     timeRecord(i)=SamplePeriod;
-    % Mahony融合濾波 (沒有用磁力校正)
     q = MahonyAHRS(q,gyr,acc,SamplePeriod,eInt);
-    
-    % Figure顯示
     R = quat2rotm(q);
-    ux = R(1,1);
-    vx = R(2,1);
-    wx = R(3,1);
-    uy = R(1,2);
-    vy = R(2,2);
-    wy = R(3,2);
-    uz = R(1,3);
-    vz = R(2,3);
-    wz = R(3,3);
     set(quivXhandle, 'xdata', 0, 'ydata', 0, 'zdata', 0,'udata', ux, 'vdata', vx, 'wdata', wx);
     set(quivYhandle, 'xdata', 0, 'ydata', 0, 'zdata', 0,'udata', uy, 'vdata', vy, 'wdata', wy);
     set(quivZhandle, 'xdata', 0, 'ydata', 0, 'zdata', 0,'udata', uz, 'vdata', vz, 'wdata', wz);
     drawnow;
-    
     i=i+1;
 %     for j = numel(rotators)
 %         R = quat2rotm(rotators(j));
