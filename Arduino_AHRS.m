@@ -1,5 +1,5 @@
 % a = arduino('COM3', 'Uno', 'Libraries', 'I2C');
-% fs = 200; % Sample Rate in Hz
+% fs = 50; % Sample Rate in Hz
 % imu = mpu9250(a,'SampleRate',fs,'OutputFormat','matrix'); 
 %===========================================================================
 
@@ -48,9 +48,9 @@ i=2;
 % set(gca, 'Xlim', Xlim, 'Ylim', Ylim, 'Zlim', Zlim);
 % view(View(1, :));
 time=0;
-p = plot(linAcc(:,3));
+p = plot(linVel(:,3));
 
-p.YDataSource = 'linAcc(:,3)';
+p.YDataSource = 'linVel(:,3)';
 
 tic;
 while(toc < stopTimer)
